@@ -31,15 +31,13 @@ class BmBodyPartList;
 \*------------------------------------------------------------------------------*/
 class BmBodyPartView : public BmListViewController
 {
-	typedef BmListViewController inherited;
-	
 	// archival-fieldnames:
 	static const char* const MSG_SHOWALL;
 
 public:
 	// c'tors and d'tor:
-	BmBodyPartView( minimax minmax, int32 width, int32 height, bool editable=false);
-	~BmBodyPartView();
+	BmBodyPartView(minimax minmax, int32 width, int32 height, bool editable=false);
+	virtual ~BmBodyPartView();
 
 	// native methods:
 	void AddAttachment( const BMessage* msg);

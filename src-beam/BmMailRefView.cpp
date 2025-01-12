@@ -142,7 +142,7 @@ const char* BmDateWidthAdjuster::operator() (int32 colIdx, time_t utc)
 \*------------------------------------------------------------------------------*/
 BmMailRefItem::BmMailRefItem( ColumnListView* lv, 
 										BmListModelItem* _item)
-	:	inherited( lv, _item)
+	:	BmListViewItem( lv, _item)
 	,	mWhenStringAdjuster(this)
 	,	mWhenCreatedStringAdjuster(this)
 {
@@ -221,7 +221,7 @@ void BmMailRefItem::UpdateView( BmUpdFlags flags, bool redraw,
 		updColBitmap |= (1UL << COL_CLASSIFICATION);
 	if (flags & BmMailRef::UPD_RATIO_SPAM)
 		updColBitmap |= (1UL << COL_RATIO_SPAM);
-	inherited::UpdateView( flags, redraw, updColBitmap);
+	BmListViewItem::UpdateView( flags, redraw, updColBitmap);
 }
 
 /*------------------------------------------------------------------------------*\
@@ -432,7 +432,7 @@ BmMailRefView* BmMailRefView::CreateInstance( int32 width, int32 height) {
 		-	
 \*------------------------------------------------------------------------------*/
 BmMailRefView::BmMailRefView( int32 width, int32 height)
-	:	inherited( BRect(0,0,float(width-1),float(height-1)), "Beam_MailRefView", 
+	:	BmListViewController( BRect(0,0,float(width-1),float(height-1)), "Beam_MailRefView", 
 					  B_MULTIPLE_SELECTION_LIST, false, true)
 	,	mCurrFolder( NULL)
 	,	mPartnerMailView(NULL)
@@ -556,7 +556,7 @@ void BmMailRefView::TeamUpWith(BmMailRefViewFilterControl* fc)
 \*------------------------------------------------------------------------------*/
 void BmMailRefView::ColumnWidthChanged(int32 colIdx, float NewWidth)
 {
-	inherited::ColumnWidthChanged(colIdx, NewWidth);
+	BmListViewController::ColumnWidthChanged(colIdx, NewWidth);
 	CLVColumn* column = (CLVColumn*)ColumnAt(colIdx);
 	if (!column || (column->Flags()&(CLV_COLDATA_DATE|CLV_COLDATA_BIGTIME)) == 0)
 		return;
@@ -605,7 +605,7 @@ void BmMailRefView::AttachedToWindow()
 		}
 	}
 	
-	inherited::AttachedToWindow();
+	BmListViewController::AttachedToWindow();
 }
 
 
@@ -614,7 +614,7 @@ void BmMailRefView::AttachedToWindow()
 		-	
 \*------------------------------------------------------------------------------*/
 void BmMailRefView::ReadStateInfo() {
-	inherited::ReadStateInfo();
+	BmListViewController::ReadStateInfo();
 	mLockLabelsButton->SetValue(ColumnLabelView()->LayoutLocked() ? 1 : 0);
 }
 
@@ -656,7 +656,7 @@ void BmMailRefView::MessageReceived( BMessage* msg) {
 						return;
 					}
 				}
-				inherited::MessageReceived( msg);
+				BmListViewController::MessageReceived( msg);
 				break;
 			}
 			case B_MODIFIERS_CHANGED: {
@@ -682,7 +682,7 @@ void BmMailRefView::MessageReceived( BMessage* msg) {
 				break;
 			}
 			default:
-				inherited::MessageReceived( msg);
+				BmListViewController::MessageReceived( msg);
 		}
 	}
 	catch( BM_error &err) {
@@ -749,7 +749,7 @@ void BmMailRefView::KeyDown(const char *bytes, int32 numBytes) {
 					if (mPartnerMailView)
 						mPartnerMailView->KeyDown( bytes, numBytes);
 				} else
-					inherited::KeyDown( bytes, numBytes);
+					BmListViewController::KeyDown( bytes, numBytes);
 				break;
 			}
 			case B_DELETE: {
@@ -772,7 +772,7 @@ void BmMailRefView::KeyDown(const char *bytes, int32 numBytes) {
 				break;
 			}
 			default:
-				inherited::KeyDown( bytes, numBytes);
+				BmListViewController::KeyDown( bytes, numBytes);
 				break;
 		}
 	}
@@ -783,7 +783,7 @@ void BmMailRefView::KeyDown(const char *bytes, int32 numBytes) {
 		-	
 \*------------------------------------------------------------------------------*/
 void BmMailRefView::MouseDown(BPoint point) {
-	inherited::MouseDown( point);
+	BmListViewController::MouseDown( point);
 	BMessage* msg = Looper()->CurrentMessage();
 	int32 buttons;
 	if (msg->FindInt32( "buttons", &buttons)==B_OK 
@@ -872,7 +872,7 @@ void BmMailRefView::HandleDrop( BMessage* msg) {
 		tmpMsg.AddString( BmJobModel::MSG_MODEL, mCurrFolder->Key().String());
 		TheJobStatusWin->PostMessage( &tmpMsg);
 	}
-	inherited::HandleDrop( msg);
+	BmListViewController::HandleDrop( msg);
 }
 
 /*------------------------------------------------------------------------------*\
@@ -893,7 +893,7 @@ void BmMailRefView::WindowActivated(bool active)
 \*------------------------------------------------------------------------------*/
 void BmMailRefView::FrameResized(float width, float height)
 {
-	inherited::FrameResized(width, height);
+	BmListViewController::FrameResized(width, height);
 	// track showing/hiding of view and add/drop view-items for model 
 	// accordingly:
 	if (mHiddenState == -1)
@@ -946,7 +946,7 @@ void BmMailRefView::JobIsDone( bool completed) {
 	if (IsHidden())
 		// if view is hidden, we avoid adding all view-items:
 		completed = false;
-	inherited::JobIsDone( completed);
+	BmListViewController::JobIsDone( completed);
 	if (completed && mCurrFolder) {
 		BmRef<BmMailRefList> refList( mCurrFolder->MailRefList().Get());
 		if (refList) {
@@ -978,7 +978,7 @@ void BmMailRefView::JobIsDone( bool completed) {
 		-	
 \*------------------------------------------------------------------------------*/
 BmListViewItem* BmMailRefView::AddModelItem( BmListModelItem* item) {
-	BmListViewItem* viewItem = inherited::AddModelItem(item);
+	BmListViewItem* viewItem = BmListViewController::AddModelItem(item);
 	BmMailRef* mailRef = dynamic_cast<BmMailRef*>(item);
 	if (mailRef 
 	&& mReselectionInfo.QualifiesForReselection(mailRef->EntryRef())) {
@@ -1008,7 +1008,7 @@ void BmMailRefView::RemoveModelItem( BmListModelItem* item) {
 			}
 		}
 	}
-	inherited::RemoveModelItem(item);
+	BmListViewController::RemoveModelItem(item);
 }
 
 /*------------------------------------------------------------------------------*\
@@ -1049,7 +1049,7 @@ BmString BmMailRefView::StateInfoFilename( bool forRead) {
 		}
 		return stateInfoFilename;
 	}
-	return inherited::StateInfoFilename( forRead);
+	return BmListViewController::StateInfoFilename( forRead);
 }
 
 /*------------------------------------------------------------------------------*\
@@ -1274,7 +1274,7 @@ void BmMailRefView::PopulateLabelViewMenu( BMenu* menu) {
 	item->SetTarget( this);
 	menu->AddItem( item);
 	menu->AddSeparatorItem();
-	inherited::PopulateLabelViewMenu( menu);
+	BmListViewController::PopulateLabelViewMenu( menu);
 }
 
 /*------------------------------------------------------------------------------*\

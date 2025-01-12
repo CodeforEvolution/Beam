@@ -46,11 +46,10 @@ struct BmDateWidthAdjuster
 \*------------------------------------------------------------------------------*/
 class BmMailRefItem : public BmListViewItem
 {
-	typedef BmListViewItem inherited;
 	static const int16 nFirstTextCol;
 
 public:
-	BmMailRefItem( ColumnListView* lv, BmListModelItem* item);
+	BmMailRefItem(ColumnListView* lv, BmListModelItem* item);
 	~BmMailRefItem();
 	
 	// overrides of ListViewItem:
